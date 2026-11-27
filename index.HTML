@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Faeyza · Minecraft Portfolio</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<style>
+:root{--grass:#5a9e3a;--grass-d:#3e6e28;--dirt:#8b5a2b;--dirt-d:#5c3a1a;--stone:#7d7d7d;--stone-d:#4a4a4a;--wood:#b8945f;--gold:#f0c040;--dia:#4ecdc4;--red:#e0453a;--bg:#14181c;--text:#e8e8e8;--dim:#b0b0b0}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'VT323',monospace;font-size:20px;line-height:1.5;color:var(--text);background:linear-gradient(#0b1020,#14181c 60%);background-attachment:fixed;overflow-x:hidden;transition:background .6s,color .6s}
+h1,h2,h3,h4{font-family:'Press Start 2P',monospace;letter-spacing:1px}
+#fx{position:fixed;inset:0;z-index:0;pointer-events:none}
+body>*:not(#fx):not(.trail):not(.welcome){position:relative;z-index:1}
+.px{position:fixed;width:8px;height:8px;pointer-events:none;z-index:9998}
+
+/* progress + toast */
+.progress{position:fixed!important;top:0;left:0;height:6px;width:0;background:repeating-linear-gradient(90deg,#7bd33a 0 14px,#4a9a22 14px 18px);box-shadow:0 2px 0 #000;z-index:1100!important}
+.toast{position:fixed!important;top:84px;right:-380px;width:320px;background:#222;border:4px solid #000;box-shadow:inset 3px 3px 0 rgba(255,255,255,.15),6px 6px 0 rgba(0,0,0,.5);padding:.8rem 1rem;display:flex;gap:12px;align-items:center;z-index:1200!important;transition:right .5s steps(8)}
+.toast.show{right:16px}
+.toast i{font-size:1.8rem;color:var(--gold);animation:spin 2s steps(8) infinite}
+.toast b{font:.6rem 'Press Start 2P';color:var(--gold);display:block;margin-bottom:4px}
+@keyframes spin{50%{transform:scale(1.25) rotate(15deg)}}
+
+/* navbar */
+.navbar{background:var(--stone-d);border-bottom:4px solid #000;box-shadow:0 4px 0 #000,inset 0 -4px 0 rgba(0,0,0,.4),inset 0 4px 0 rgba(255,255,255,.08);padding:.8rem 1.5rem;position:sticky!important;top:6px;z-index:1000!important;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.8rem}
+.logo{font:1.1rem 'Press Start 2P';color:var(--gold);text-shadow:2px 2px 0 #000;display:flex;align-items:center;gap:10px}
+.cube{width:28px;height:28px;background:var(--grass);border:3px solid #000;box-shadow:inset -4px -4px 0 rgba(0,0,0,.3);position:relative;animation:cubeSpin 4s steps(12) infinite}
+.cube::after{content:'';position:absolute;top:-6px;left:3px;width:18px;height:4px;background:var(--grass-d);border:2px solid #000}
+@keyframes cubeSpin{0%,80%{transform:rotate(0)}100%{transform:rotate(360deg)}}
+.nav-links{display:flex;gap:.35rem;flex-wrap:wrap;align-items:center}
+.nav-links a{color:var(--text);text-decoration:none;font-size:1.05rem;padding:.3rem .65rem;background:var(--stone);border:2px solid #000;box-shadow:inset -2px -2px 0 rgba(0,0,0,.35),inset 2px 2px 0 rgba(255,255,255,.15);transition:.1s;text-transform:uppercase}
+.nav-links a:hover,.nav-links a.active{background:var(--grass);color:#fff;transform:translateY(-3px);box-shadow:inset -2px -2px 0 rgba(0,0,0,.35),inset 2px 2px 0 rgba(255,255,255,.25),0 3px 0 #000}
+.theme-toggle{background:var(--wood);border:2px solid #000;box-shadow:inset -2px -2px 0 rgba(0,0,0,.35),inset 2px 2px 0 rgba(255,255,255,.2);width:42px;height:42px;font-size:1.2rem;cursor:pointer;transition:.15s}
+.theme-toggle:hover{background:var(--gold);transform:rotate(20deg) scale(1.1)}
+
+/* sections */
+section{max-width:1150px;margin:0 auto;padding:4.5rem 1.5rem}
+.section-title{font-size:1.5rem;color:var(--gold);text-shadow:3px 3px 0 #000;margin-bottom:2.2rem;display:inline-flex;align-items:center;gap:12px;padding-bottom:.6rem;border-bottom:4px solid var(--grass);position:relative}
+.section-title i{color:var(--dia);animation:bob 2s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-6px)}}
+.divider{height:24px;background:repeating-linear-gradient(90deg,var(--grass) 0 32px,var(--grass-d) 32px 64px);border-top:4px solid #000;border-bottom:12px solid var(--dirt);box-shadow:0 4px 0 #000;position:relative}
+.divider::after{content:'';position:absolute;inset:auto 0 -20px 0;height:8px;background:repeating-linear-gradient(90deg,var(--dirt-d) 0 24px,var(--dirt) 24px 48px)}
+
+/* hero */
+.hero{min-height:88vh;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:3rem;position:relative}
+.cloud{position:absolute!important;height:28px;width:90px;background:#fff;opacity:.85;box-shadow:30px -20px 0 #fff,60px -20px 0 #fff,90px 0 0 #fff,-30px 0 0 #fff;animation:drift linear infinite;z-index:0!important;top:8%}
+.light .cloud{opacity:1}
+body:not(.light) .cloud{opacity:.12}
+@keyframes drift{from{left:-250px}to{left:110%}}
+.hero-text{flex:1;min-width:300px}
+.hero-text h1{font-size:2.2rem;line-height:1.5;margin-bottom:1.2rem;color:#fff;text-shadow:4px 4px 0 #000}
+.hl{color:var(--gold);text-shadow:4px 4px 0 var(--dirt-d);display:inline-block;animation:wave 2.4s ease-in-out infinite}
+@keyframes wave{50%{transform:translateY(-6px) rotate(-2deg)}}
+.hand{display:inline-block;animation:hand 1.6s infinite;transform-origin:70% 70%}
+@keyframes hand{0%,60%,100%{transform:rotate(0)}10%,30%{transform:rotate(18deg)}20%,40%{transform:rotate(-12deg)}}
+.subtitle{font-size:1.5rem;color:var(--dim);margin-bottom:.8rem}
+.typing{font-size:1.7rem;color:var(--dia);min-height:2.4rem;margin:1rem 0;padding-left:1rem;border-left:4px solid var(--grass)}
+.typing::after{content:'█';margin-left:4px;animation:blink 1s steps(2) infinite}
+@keyframes blink{50%{opacity:0}}
+.btn-group{display:flex;gap:1rem;flex-wrap:wrap;margin-top:1.5rem}
+.mc-btn{font:.7rem 'Press Start 2P';padding:1rem 1.4rem;color:#fff;text-decoration:none;background:var(--grass);border:3px solid #000;box-shadow:inset -3px -3px 0 rgba(0,0,0,.35),inset 3px 3px 0 rgba(255,255,255,.2),0 5px 0 #000;transition:.08s;display:inline-flex;align-items:center;gap:8px;text-transform:uppercase;position:relative;overflow:hidden}
+.mc-btn::after{content:'';position:absolute;top:0;left:-60%;width:30%;height:100%;background:rgba(255,255,255,.3);transform:skewX(-20deg);transition:.4s}
+.mc-btn:hover::after{left:130%}
+.mc-btn:hover{transform:translateY(3px);box-shadow:inset -3px -3px 0 rgba(0,0,0,.35),inset 3px 3px 0 rgba(255,255,255,.2),0 2px 0 #000}
+.mc-btn.secondary{background:var(--stone)}
+
+.hero-avatar{flex:1;min-width:280px;display:flex;justify-content:center;align-items:center}
+.hero-portrait{position:relative;width:320px;max-width:100%;display:flex;flex-direction:column;align-items:center;animation:float 3.2s ease-in-out infinite}
+@keyframes float{50%{transform:translateY(-16px)}}
+.hero-portrait img{width:100%;height:auto;image-rendering:pixelated;filter:drop-shadow(6px 15px 6px rgba(0,0,0,.6));position:relative;z-index:2;min-height:200px}
+.base{position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);width:70%;height:32px;background:var(--grass);border:4px solid #000;box-shadow:inset 0 8px 0 var(--grass-d),inset 0 -8px 0 var(--dirt-d),0 10px 15px rgba(0,0,0,.8);z-index:1}
+.orbit{position:absolute!important;inset:0;z-index:3;pointer-events:none;animation:orbit 9s linear infinite}
+.orbit i{position:absolute;font-size:1.7rem;filter:drop-shadow(2px 2px 0 #000)}
+.orbit i:nth-child(1){top:-8%;left:46%;color:var(--dia)}
+.orbit i:nth-child(2){top:46%;right:-14%;color:var(--gold)}
+.orbit i:nth-child(3){bottom:0;left:40%;color:var(--red)}
+.orbit i:nth-child(4){top:46%;left:-14%;color:#9be15d}
+.orbit i{animation:orbit 9s linear infinite reverse}
+@keyframes orbit{to{transform:rotate(360deg)}}
+
+/* cards */
+.grid-2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.8rem}
+.mc-card{background:var(--stone-d);border:4px solid #000;box-shadow:inset -4px -4px 0 rgba(0,0,0,.4),inset 4px 4px 0 rgba(255,255,255,.08),8px 8px 0 rgba(0,0,0,.5);padding:1.8rem;position:relative;transform:perspective(700px) rotateX(var(--rx,0)) rotateY(var(--ry,0));transition:transform .12s,box-shadow .15s;overflow:hidden}
+.mc-card:hover{box-shadow:inset -4px -4px 0 rgba(0,0,0,.4),inset 4px 4px 0 rgba(255,255,255,.1),12px 12px 0 rgba(0,0,0,.5)}
+.mc-card h3{font-size:.85rem;color:var(--gold);text-shadow:2px 2px 0 #000;margin-bottom:1.2rem;display:flex;align-items:center;gap:10px;padding-bottom:.6rem;border-bottom:3px solid var(--dirt)}
+.mc-card h3 i{color:var(--dia)}
+.mc-card p,.mc-card li{font-size:1.25rem;line-height:1.6}
+.mc-card ul{list-style:none}
+.mc-card li{padding:.35rem 0;display:flex;gap:10px;align-items:flex-start}
+.mc-card li>i{color:var(--grass);margin-top:6px;font-size:.9rem;flex-shrink:0;transition:.2s}
+.mc-card li:hover>i{transform:translateX(5px);color:var(--gold)}
+.mc-card a{color:var(--dia);text-decoration:none;border-bottom:2px dotted var(--dia)}
+.mc-card a:hover{color:var(--gold);border-color:var(--gold)}
+
+/* xp bars */
+.skill-item{margin-bottom:1.4rem}
+.skill-label{display:flex;justify-content:space-between;font-size:1.2rem;margin-bottom:.4rem}
+.skill-label strong{color:var(--gold)}
+.xp-bar{height:24px;background:#111;border:3px solid #000;box-shadow:inset 2px 2px 0 rgba(0,0,0,.8);overflow:hidden}
+.xp-fill{height:100%;width:0;background:repeating-linear-gradient(90deg,#7bd33a 0 18px,#4a9a22 18px 22px);box-shadow:inset 0 -4px 0 rgba(0,0,0,.25),inset 0 4px 0 rgba(255,255,255,.2);transition:width 1.6s steps(20);position:relative}
+.xp-fill::after{content:'';position:absolute;top:0;left:-40%;width:30%;height:100%;background:rgba(255,255,255,.4);transform:skewX(-20deg);animation:shine 2.4s infinite}
+@keyframes shine{to{left:140%}}
+
+/* galeri */
+.gallery-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.8rem}
+.gallery-item{background:var(--dirt-d);border:4px solid #000;box-shadow:inset -4px -4px 0 rgba(0,0,0,.4),inset 4px 4px 0 rgba(255,255,255,.08),6px 6px 0 rgba(0,0,0,.5);padding:10px;overflow:hidden;transition:.15s;cursor:pointer}
+.gallery-item:hover{transform:translate(-4px,-6px) rotate(-1deg);background:var(--dirt);box-shadow:inset -4px -4px 0 rgba(0,0,0,.4),inset 4px 4px 0 rgba(255,255,255,.12),12px 14px 0 rgba(0,0,0,.5)}
+.gallery-frame{border:4px solid #000;background:#000;overflow:hidden;aspect-ratio:4/3}
+.gallery-frame img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s}
+.gallery-item:hover img{transform:scale(1.08)}
+.light .gallery-item{background:#c9dbb0}
+
+.hobby-icon{font-size:2.2rem;color:var(--gold);margin-bottom:.6rem;display:inline-block;filter:drop-shadow(2px 2px 0 #000);transition:.3s}
+.mc-card:hover .hobby-icon{transform:scale(1.3) rotate(-10deg)}
+
+/* footer */
+footer{background:var(--stone-d);border-top:5px solid var(--grass);box-shadow:0 -4px 0 #000;text-align:center;padding:2.5rem 1rem;color:var(--dim);font-size:1.15rem}
+footer strong{color:var(--gold)}
+.creeper{width:48px;height:48px;margin:0 auto 1rem;background:#5fbf3a;border:3px solid #000;display:grid;grid-template-columns:repeat(8,1fr);grid-template-rows:repeat(8,1fr);cursor:pointer;image-rendering:pixelated}
+.creeper s{background:transparent}.creeper s.k{background:#000}
+.creeper.boom{animation:boom .6s steps(6) forwards}
+@keyframes boom{0%{transform:scale(1)}20%{transform:scale(1.4);filter:brightness(3)}40%{transform:translateX(-6px) scale(1.5)}60%{transform:translateX(6px) scale(1.6);filter:brightness(5)}100%{transform:scale(1)}}
+.back-to-top{position:fixed!important;bottom:25px;right:25px;width:54px;height:54px;background:var(--grass);color:#fff;border:4px solid #000;box-shadow:inset -3px -3px 0 rgba(0,0,0,.35),inset 3px 3px 0 rgba(255,255,255,.2),0 5px 0 #000;display:flex;justify-content:center;align-items:center;font-size:1.4rem;text-decoration:none;z-index:999!important;opacity:0;visibility:hidden;transition:.2s}
+.back-to-top.show{opacity:1;visibility:visible;animation:bob 1.6s infinite}
+
+/* reveal */
+.reveal{opacity:0;transform:translateY(30px) scale(.94)}
+.reveal.in{animation:pop .6s steps(7) forwards;animation-delay:var(--d,0s)}
+@keyframes pop{to{opacity:1;transform:none}}
+
+/* light */
+body.light{background:linear-gradient(#7ec8f5,#d9f0c8 70%);color:#222}
+.light .navbar{background:#a7c78a}.light .nav-links a{color:#1a1a1a;background:#c9dbb0}
+.light .mc-card,.light .project-card{background:#c9dbb0;color:#1a1a1a}
+.light .project-card h4,.light .mc-card h3{color:#6b4a1f;text-shadow:none}
+.light footer{background:#a7c78a;color:#2b2b2b}.light .section-title{color:#6b4a1f;text-shadow:2px 2px 0 #fff}
+.light .hero-text h1{color:#1a1a1a;text-shadow:3px 3px 0 #fff}.light .subtitle{color:#333}.light .typing{color:#1d6f6a}
+
+/* welcome */
+.welcome{position:fixed;inset:0;background:#14181c;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:1.5rem;z-index:9999;animation:out 3s forwards;pointer-events:none}
+.welcome h2{font-size:1.8rem;color:var(--grass);text-shadow:4px 4px 0 #000,8px 8px 0 var(--dirt-d);animation:pop2 .5s steps(5)}
+@keyframes pop2{from{transform:scale(.5);opacity:0}}
+.load{width:min(320px,80vw);height:22px;border:4px solid #000;background:#333}
+.load i{display:block;height:100%;background:repeating-linear-gradient(90deg,#7bd33a 0 14px,#4a9a22 14px 18px);animation:ld 2.3s steps(16) forwards;width:0}
+@keyframes ld{to{width:100%}}
+.welcome small{font:.7rem 'Press Start 2P';color:var(--gold)}
+@keyframes out{0%,80%{opacity:1}100%{opacity:0;visibility:hidden}}
+
+@media(max-width:768px){body{font-size:18px}.navbar{justify-content:center}.hero-text h1{font-size:1.4rem}.section-title{font-size:1.1rem}.hero-portrait{width:250px}section{padding:3rem 1rem}.toast{width:250px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}.reveal{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<canvas id="fx"></canvas>
+<div class="progress" id="progress"></div>
+<div class="toast" id="toast"><i class="fas fa-trophy"></i><div><b>ACHIEVEMENT UNLOCKED!</b><span id="toastText"></span></div></div>
+
+<div class="welcome"><h2>&gt; WELCOME</h2><div class="load"><i></i></div><small>Memuat dunia Faeyza’s…</small></div>
+
+<nav class="navbar">
+  <div class="logo"><span class="cube"></span> EYZA</div>
+  <div class="nav-links">
+    <a href="#home">Home</a><a href="#about">About</a><a href="#skills">Skills</a><a href="#gallery">Galeri</a><a href="#achievements">Prestasi</a><a href="#education">Education</a><a href="#hobbies">Hobbies</a><a href="#goals">Goals</a><a href="#contact">Contact</a>
+    <button class="theme-toggle" id="themeToggle" title="Ganti Siang/Malam"><i class="fas fa-moon"></i></button>
+  </div>
+</nav>
+
+<section id="home" class="hero" data-ach="Spawn di dunia baru!">
+  <div class="cloud" style="animation-duration:60s;top:6%"></div>
+  <div class="cloud" style="animation-duration:85s;top:30%;animation-delay:-30s"></div>
+  <div class="hero-text">
+    <h1>Halo, Aku <span class="hl">Faeyza</span>! <span class="hand">👋</span></h1>
+    <div class="subtitle">Pelajar SMPIT Assyifa Boarding School · Kelas 9 Abu</div>
+    <div class="typing" id="typing"></div>
+    <div class="btn-group">
+      <a href="#about" class="mc-btn"><i class="fas fa-user"></i> Kenali Aku</a>
+      <a href="#gallery" class="mc-btn secondary"><i class="fas fa-images"></i> Lihat Galeri</a>
+    </div>
+  </div>
+  <div class="hero-avatar">
+    <div class="hero-portrait">
+      <div class="orbit"><i class="fas fa-gem"></i><i class="fas fa-coins"></i><i class="fas fa-heart"></i><i class="fas fa-leaf"></i></div>
+      <!-- GANTI src DI BAWAH INI DENGAN NAMA FILE GAMBAR KAMU -->
+      <img src="karakter.png" alt="Karakter Faeyza">
+      <div class="base"></div>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section id="about" data-ach="Kenalan dulu!">
+  <h2 class="section-title reveal"><i class="fas fa-id-card"></i> Tentang Saya</h2>
+  <div class="grid-2">
+    <div class="mc-card reveal">
+      <h3><i class="fas fa-user"></i> Biodata</h3>
+      <ul>
+        <li><i class="fas fa-caret-right"></i><span><strong>Nama Lengkap:</strong> Faeyza Muhammad Arfi</span></li>
+        <li><i class="fas fa-caret-right"></i><span><strong>Panggilan:</strong> Eyza</span></li>
+        <li><i class="fas fa-caret-right"></i><span><strong>Kelas:</strong> 9 Abu</span></li>
+        <li><i class="fas fa-caret-right"></i><span><strong>Sekolah:</strong> SMPIT Assyifa Boarding School</span></li>
+      </ul>
+    </div>
+    <div class="mc-card reveal" style="--d:.15s">
+      <h3><i class="fas fa-heart"></i> Tentang Diriku</h3>
+      <p>Aku Faeyza, pelajar yang suka hal-hal seru dan kreatif. Suka main game, baca buku, nonton film, dan baca komik.</p>
+      <p style="margin-top:1rem"><strong>Hobi:</strong> Makan, Main Game, Baca Buku, Nonton Film, Baca Komik.</p>
+      <p style="margin-top:.8rem"><strong>Cita-cita:</strong> Jadi pengusaha sukses dan banggain orang tua!</p>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section id="skills" data-ach="Level up! Skill terbuka">
+  <h2 class="section-title reveal"><i class="fas fa-bolt"></i> Kemampuan</h2>
+  <div class="grid-2">
+    <div class="mc-card reveal">
+      <h3><i class="fas fa-code"></i> Hard Skills</h3>
+      <div class="skill-item"><div class="skill-label"><span>Main Game &amp; Strategi</span><strong data-n="90">0%</strong></div><div class="xp-bar"><div class="xp-fill" data-w="90"></div></div></div>
+      <div class="skill-item"><div class="skill-label"><span>Editing Video (CapCut)</span><strong data-n="50">0%</strong></div><div class="xp-bar"><div class="xp-fill" data-w="50"></div></div></div>
+      <div class="skill-item"><div class="skill-label"><span>Desain Grafis (Canva)</span><strong data-n="60">0%</strong></div><div class="xp-bar"><div class="xp-fill" data-w="60"></div></div></div>
+      <div class="skill-item"><div class="skill-label"><span>Public Speaking</span><strong data-n="85">0%</strong></div><div class="xp-bar"><div class="xp-fill" data-w="85"></div></div></div>
+    </div>
+    <div class="mc-card reveal" style="--d:.15s">
+      <h3><i class="fas fa-users"></i> Soft Skills</h3>
+      <ul>
+        <li><i class="fas fa-caret-right"></i><span>Kerja Sama Tim</span></li>
+        <li><i class="fas fa-caret-right"></i><span>Kreativitas</span></li>
+        <li><i class="fas fa-caret-right"></i><span>Cepat Belajar</span></li>
+        <li><i class="fas fa-caret-right"></i><span>Manajemen Waktu</span></li>
+        <li><i class="fas fa-caret-right"></i><span>Komunikasi</span></li>
+        <li><i class="fas fa-caret-right"></i><span>Problem Solving</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section id="gallery" data-ach="Album foto dibuka!">
+  <h2 class="section-title reveal"><i class="fas fa-images"></i> Galeri</h2>
+  <div class="gallery-grid">
+    <!-- Simpan buken1.png dan buken2.png di folder yang sama dengan index.html -->
+    <div class="gallery-item reveal"><div class="gallery-frame"><img src="buken1.png" alt="Foto galeri Faeyza 1" loading="lazy"></div></div>
+    <div class="gallery-item reveal" style="--d:.15s"><div class="gallery-frame"><img src="buken2.png" alt="Foto galeri Faeyza 2" loading="lazy"></div></div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section id="achievements" data-ach="Menemukan berlian!">
+  <h2 class="section-title reveal"><i class="fas fa-trophy"></i> Prestasi</h2>
+  <div class="grid-2">
+    <div class="mc-card reveal">
+      <h3><i class="fas fa-medal"></i> Pencapaian</h3>
+      <ul>
+        <li><i class="fas fa-star"></i><span>Ngabisin 500k dalam seminggu</span></li>
+        <li><i class="fas fa-star"></i><span>Mesen makan sampai 10x</span></li>
+        <li><i class="fas fa-star"></i><span>Masuk organisasi Komunitas Literasi Sekolah</span></li>
+      </ul>
+    </div>
+    <div class="mc-card reveal" style="--d:.15s">
+      <h3><i class="fas fa-gem"></i> Proses Belajar</h3>
+      <p>Selalu belajar hal baru di bidang teknologi dan kreatif — dari editing video, desain, sampai coding dasar. Setiap karya adalah langkah menuju impian!</p>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section id="education" data-ach="Masuk sekolah sihir!">
+  <h2 class="section-title reveal"><i class="fas fa-graduation-cap"></i> Pendidikan</h2>
+  <div class="grid-2">
+    <div class="mc-card reveal">
+      <h3><i class="fas fa-school"></i> Riwayat</h3>
+      <ul>
+        <li><i class="fas fa-caret-right"></i><span><strong>SMPIT Assyifa Boarding School</strong> (Kelas 9 Abu) — Sekarang</span></li>
+        <li><i class="fas fa-caret-right"></i><span><strong>SD Exiss Abata</strong> — Lulus</span></li>
+      </ul>
+    </div>
+    <div class="mc-card reveal" style="--d:.15s">
+      <h3><i class="fas fa-book-open"></i> Pengalaman &amp; Minat</h3>
+      <p>Mapel favorit: <strong>IPA</strong> dan <strong>Bahasa Indonesia</strong>. Suka belajar sambil praktik langsung, terutama yang berhubungan dengan komputer dan desain.</p>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section id="hobbies" data-ach="Waktunya bersantai!">
+  <h2 class="section-title reveal"><i class="fas fa-gamepad"></i> Hobi &amp; Minat</h2>
+  <div class="grid-2">
+    <div class="mc-card reveal"><i class="fas fa-utensils hobby-icon"></i><h3>Makan</h3><p>Makan adalah hobi wajib! Suka mencoba makanan baru, apalagi yang pedas dan gurih.</p></div>
+    <div class="mc-card reveal" style="--d:.1s"><i class="fas fa-gamepad hobby-icon"></i><h3>Main Game</h3><p>Game favorit: Roblox, Mobile Legends, dan Minecraft. Suka main bareng teman!</p></div>
+    <div class="mc-card reveal" style="--d:.2s"><i class="fas fa-book hobby-icon"></i><h3>Baca Buku &amp; Komik</h3><p>Suka buku petualangan, komik manga, dan novel ringan. Baca sambil santai itu seru!</p></div>
+    <div class="mc-card reveal" style="--d:.3s"><i class="fas fa-film hobby-icon"></i><h3>Nonton Film</h3><p>Film favorit: Action, Animasi, dan Komedi. Sering nonton bareng keluarga.</p></div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section id="goals" data-ach="Quest baru: masa depan!">
+  <h2 class="section-title reveal"><i class="fas fa-rocket"></i> Cita-cita &amp; Target</h2>
+  <div class="mc-card reveal">
+    <h3><i class="fas fa-bullseye"></i> Impian Masa Depan</h3>
+    <ul>
+      <li><i class="fas fa-caret-right"></i><span>Menjadi <strong>pengusaha sukses</strong>.</span></li>
+      <li><i class="fas fa-caret-right"></i><span><strong>Masuk surga</strong>.</span></li>
+      <li><i class="fas fa-caret-right"></i><span><strong>Banggain orang tua</strong>.</span></li>
+      <li><i class="fas fa-caret-right"></i><span>Masuk ke <strong>Institut Teknologi Bandung (ITB)</strong>.</span></li>
+      <li><i class="fas fa-caret-right"></i><span>Beli <strong>motor bagus</strong>!</span></li>
+    </ul>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section id="contact" data-ach="Kirim pesan lewat pos!">
+  <h2 class="section-title reveal"><i class="fas fa-envelope"></i> Hubungi Saya</h2>
+  <div class="grid-2">
+    <div class="mc-card reveal">
+      <h3><i class="fas fa-at"></i> Media Sosial</h3>
+      <ul>
+        <li><i class="fab fa-instagram"></i><span><strong>Instagram:</strong> <a href="https://instagram.com/jaarp_ii" target="_blank" rel="noopener">@jaarp_ii</a></span></li>
+        <li><i class="fab fa-tiktok"></i><span><strong>TikTok:</strong> <a href="https://tiktok.com/@grps7gg" target="_blank" rel="noopener">@grps7gg</a></span></li>
+        <li><i class="fas fa-envelope"></i><span><strong>Email:</strong> <a href="mailto:faeyza.muhammad799@smp.belajar.id">faeyza.muhammad799@smp.belajar.id</a></span></li>
+      </ul>
+    </div>
+    <div class="mc-card reveal" style="--d:.15s">
+      <h3><i class="fas fa-comment-dots"></i> Ayo Ngobrol!</h3>
+      <p>Bisa hubungi aku lewat Instagram, TikTok, atau email. Jangan ragu untuk kolaborasi atau sekadar say hi!</p>
+      <div class="btn-group" style="margin-top:1.2rem">
+        <a href="https://instagram.com/jaarp_ii" target="_blank" rel="noopener" class="mc-btn"><i class="fab fa-instagram"></i> Follow IG</a>
+        <a href="mailto:faeyza.muhammad799@smp.belajar.id" class="mc-btn secondary"><i class="fas fa-envelope"></i> Kirim Email</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="creeper" id="creeper" title="Jangan diklik… 💥"></div>
+  <p>© 2026 Personal Portfolio | Created by <strong>Faeyza Muhammad Arfi</strong></p>
+  <p style="margin-top:.5rem">SMPIT Assyifa Boarding School · Kelas 9 Abu</p>
+  <p style="margin-top:.5rem">“Terus belajar, terus berkarya!”</p>
+</footer>
+<a href="#home" class="back-to-top" id="backToTop"><i class="fas fa-caret-up"></i></a>
+
+<script>
+const $=s=>document.querySelector(s),$$=s=>document.querySelectorAll(s);
+const reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+/* ambient particles: kunang-kunang (malam) / daun (siang) */
+const cv=$('#fx'),cx=cv.getContext('2d');let W,H,P=[];
+function size(){W=cv.width=innerWidth;H=cv.height=innerHeight}
+addEventListener('resize',size);size();
+for(let i=0;i<45;i++)P.push({x:Math.random()*W,y:Math.random()*H,s:3+Math.random()*5|0,v:.3+Math.random()*.7,p:Math.random()*6});
+function loop(t){
+  cx.clearRect(0,0,W,H);
+  const day=document.body.classList.contains('light');
+  P.forEach(o=>{
+    if(day){o.y+=o.v;o.x+=Math.sin(t/900+o.p)*.8;if(o.y>H){o.y=-10;o.x=Math.random()*W}
+      cx.fillStyle=o.s%2?'#5a9e3a':'#3e6e28'}
+    else{o.y-=o.v*.4;o.x+=Math.sin(t/1200+o.p)*.6;if(o.y<-10){o.y=H+10;o.x=Math.random()*W}
+      cx.fillStyle=`rgba(240,192,64,${.35+.65*Math.abs(Math.sin(t/700+o.p))})`}
+    cx.fillRect(o.x|0,o.y|0,o.s,o.s);
+  });
+  if(!reduce)requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+
+/* kursor jejak pixel + pecah blok saat klik */
+function burst(x,y,n,cols){
+  if(reduce)return;
+  for(let i=0;i<n;i++){
+    const d=document.createElement('div');d.className='px';
+    d.style.cssText=`left:${x}px;top:${y}px;background:${cols[i%cols.length]};border:2px solid #000`;
+    document.body.appendChild(d);
+    const a=Math.random()*6.28,r=30+Math.random()*60;
+    d.animate([{transform:'translate(0,0)',opacity:1},{transform:`translate(${Math.cos(a)*r}px,${Math.sin(a)*r+50}px) rotate(180deg)`,opacity:0}],{duration:700,easing:'ease-out'}).onfinish=()=>d.remove();
+  }
+}
+let last=0;
+addEventListener('mousemove',e=>{
+  const n=Date.now();if(n-last<60)return;last=n;
+  const d=document.createElement('div');d.className='px';
+  d.style.cssText=`left:${e.clientX}px;top:${e.clientY}px;width:6px;height:6px;background:#f0c040`;
+  document.body.appendChild(d);
+  d.animate([{opacity:.9,transform:'scale(1)'},{opacity:0,transform:'scale(0) translateY(14px)'}],{duration:600}).onfinish=()=>d.remove();
+});
+addEventListener('click',e=>burst(e.clientX,e.clientY,10,['#5a9e3a','#8b5a2b','#7d7d7d','#f0c040']));
+
+/* ketik otomatis */
+const words=['Main, Belajar, Berkarya — Seru Terus!','Calon game developer 🎮','Kreator konten digital ✨','Penjelajah dunia pixel ⛏️'];
+let wi=0,ci=0,del=false;const ty=$('#typing');
+(function type(){
+  const w=words[wi];ty.textContent=w.slice(0,ci);
+  if(!del&&ci<w.length)ci++;else if(!del){del=true;return setTimeout(type,1600)}
+  else if(del&&ci>0)ci--;else{del=false;wi=(wi+1)%words.length}
+  setTimeout(type,del?35:75);
+})();
+
+/* reveal, xp bar, hitung angka */
+const io=new IntersectionObserver(es=>es.forEach(e=>{
+  if(!e.isIntersecting)return;
+  e.target.classList.add('in');
+  e.target.querySelectorAll?.('.xp-fill').forEach(f=>f.style.width=f.dataset.w+'%');
+  e.target.querySelectorAll?.('[data-n]').forEach(c=>{
+    const to=+c.dataset.n;let v=0;const iv=setInterval(()=>{v=Math.min(to,v+3);c.textContent=v+'%';if(v>=to)clearInterval(iv)},40);
+  });
+  io.unobserve(e.target);
+}),{threshold:.25});
+$$('.reveal').forEach(r=>io.observe(r));
+
+/* achievement toast + nav aktif */
+const toast=$('#toast'),seen=new Set();let tq=[],busy=false;
+function showNext(){
+  if(busy||!tq.length)return;busy=true;
+  $('#toastText').textContent=tq.shift();toast.classList.add('show');
+  setTimeout(()=>{toast.classList.remove('show');setTimeout(()=>{busy=false;showNext()},600)},2600);
+}
+const so=new IntersectionObserver(es=>es.forEach(e=>{
+  if(!e.isIntersecting)return;
+  const id=e.target.id;
+  $$('.nav-links a').forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+id));
+  if(!seen.has(id)&&id!=='home'){seen.add(id);tq.push(e.target.dataset.ach);showNext()}
+}),{threshold:.35});
+$$('section').forEach(s=>so.observe(s));
+
+/* progress, back-to-top */
+addEventListener('scroll',()=>{
+  const h=document.documentElement;
+  $('#progress').style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%';
+  $('#backToTop').classList.toggle('show',scrollY>400);
+},{passive:true});
+
+/* kartu miring 3D */
+$$('.mc-card').forEach(c=>{
+  c.addEventListener('mousemove',e=>{
+    const r=c.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;
+    c.style.setProperty('--ry',(x*8)+'deg');c.style.setProperty('--rx',(-y*8)+'deg');
+  });
+  c.addEventListener('mouseleave',()=>{c.style.setProperty('--rx','0deg');c.style.setProperty('--ry','0deg')});
+});
+
+/* siang / malam */
+$('#themeToggle').addEventListener('click',()=>{
+  const l=document.body.classList.toggle('light');
+  $('#themeToggle i').className=l?'fas fa-sun':'fas fa-moon';
+});
+
+/* creeper iseng */
+const cr=$('#creeper'),face='00000000011001100110011000011000001111000011110000100100000000000'.slice(0,64);
+face.split('').forEach(b=>{const s=document.createElement('s');if(b==='1')s.className='k';cr.appendChild(s)});
+cr.addEventListener('click',e=>{
+  e.stopPropagation();cr.classList.remove('boom');void cr.offsetWidth;cr.classList.add('boom');
+  const r=cr.getBoundingClientRect();
+  setTimeout(()=>burst(r.left+24,r.top+24,40,['#5fbf3a','#3e6e28','#000','#f0c040','#e0453a']),350);
+});
+setTimeout(()=>$('.welcome')?.remove(),3000);
+</script>
+</body>
+</html>
